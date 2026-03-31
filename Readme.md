@@ -28,6 +28,9 @@ This has a useful consequence: when an event occurs at Node A, it does not immed
 
 State transitions are handled as curves rather than step functions. The result is phase stability: the system absorbs change rather than snapping between states.
 
+
+![Diagram](diagram.png)
+
 ---
 
 ## III. Saliency-Driven Sampling: The Insect Layer
