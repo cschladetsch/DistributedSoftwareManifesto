@@ -243,24 +243,52 @@
     W_influence &nbsp;=&nbsp; W_source &nbsp;&times;&nbsp; 1/(1 + dist&sup2;) &nbsp;&times;&nbsp; e<sup>&minus;&lambda;t</sup>
   </div>
 
-  <svg class="node-diagram" viewBox="0 0 680 120">
+  <p style="font-size:11px;color:#2a5a2a;margin-bottom:8px;letter-spacing:0.05em;">DRAG NODE A AND NODE B TO REPOSITION &mdash; DISTANCES UPDATE IN REAL TIME</p>
+
+  <svg id="node-svg" class="node-diagram" viewBox="0 0 680 260" style="cursor:default;margin-bottom:4px;">
     <defs>
-      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
         <path d="M2 1L8 5L2 9" fill="none" stroke="#7fff7f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </marker>
     </defs>
-    <circle cx="100" cy="60" r="30" fill="none" stroke="#1a3a1a" stroke-width="1.5"/>
-    <text x="100" y="54" text-anchor="middle" fill="#4fb84f" font-size="10" dominant-baseline="central">SOURCE</text>
-    <text id="wsrc-label" x="100" y="70" text-anchor="middle" fill="#bfffbf" font-size="13" dominant-baseline="central">1.00</text>
 
-    <line id="inf-line" x1="131" y1="60" x2="548" y2="60" stroke="#7fff7f" stroke-width="5" stroke-linecap="round" marker-end="url(#arr)" opacity="0.9"/>
+    <!-- Influence lines (drawn first, behind nodes) -->
+    <line id="line-sa" stroke="#7fff7f" stroke-linecap="round" marker-end="url(#arr)" fill="none"/>
+    <line id="line-sb" stroke="#7fff7f" stroke-linecap="round" marker-end="url(#arr)" fill="none"/>
+    <line id="line-ad" stroke="#7fff7f" stroke-linecap="round" marker-end="url(#arr)" fill="none"/>
+    <line id="line-bd" stroke="#7fff7f" stroke-linecap="round" marker-end="url(#arr)" fill="none"/>
 
-    <circle cx="580" cy="60" r="30" fill="none" stroke="#1a3a1a" stroke-width="1.5"/>
-    <text x="580" y="54" text-anchor="middle" fill="#4fb84f" font-size="10" dominant-baseline="central">NODE B</text>
-    <text id="winf-svg" x="580" y="70" text-anchor="middle" fill="#bfffbf" font-size="13" dominant-baseline="central">1.00</text>
+    <!-- Distance labels -->
+    <text id="dlbl-sa" fill="#2a5a2a" font-size="9" text-anchor="middle"></text>
+    <text id="dlbl-sb" fill="#2a5a2a" font-size="9" text-anchor="middle"></text>
+    <text id="dlbl-ad" fill="#2a5a2a" font-size="9" text-anchor="middle"></text>
+    <text id="dlbl-bd" fill="#2a5a2a" font-size="9" text-anchor="middle"></text>
 
-    <text id="dist-lbl" x="340" y="90" text-anchor="middle" fill="#2a5a2a" font-size="11">dist = 0.0</text>
-    <text id="time-lbl" x="340" y="18" text-anchor="middle" fill="#2a5a2a" font-size="11">t = 0.0</text>
+    <!-- SOURCE (fixed left) -->
+    <circle id="src-c" cx="50" cy="130" r="26" fill="#060e06" stroke="#1a3a1a" stroke-width="1.5"/>
+    <text x="50" y="124" text-anchor="middle" fill="#4fb84f" font-size="9" dominant-baseline="central">SOURCE</text>
+    <text id="wsrc-label" x="50" y="138" text-anchor="middle" fill="#bfffbf" font-size="11" dominant-baseline="central">1.00</text>
+
+    <!-- NODE A (draggable, upper) -->
+    <g id="node-a" style="cursor:grab;">
+      <circle id="na-c" cx="280" cy="60" r="26" fill="#060e06" stroke="#1a3a1a" stroke-width="1.5"/>
+      <text id="na-t1" x="280" y="54" text-anchor="middle" fill="#4fb84f" font-size="9" dominant-baseline="central">NODE A</text>
+      <text id="na-t2" x="280" y="68" text-anchor="middle" fill="#bfffbf" font-size="11" dominant-baseline="central">1.00</text>
+    </g>
+
+    <!-- NODE B (draggable, lower) -->
+    <g id="node-b" style="cursor:grab;">
+      <circle id="nb-c" cx="280" cy="200" r="26" fill="#060e06" stroke="#1a3a1a" stroke-width="1.5"/>
+      <text id="nb-t1" x="280" y="194" text-anchor="middle" fill="#4fb84f" font-size="9" dominant-baseline="central">NODE B</text>
+      <text id="nb-t2" x="280" y="208" text-anchor="middle" fill="#bfffbf" font-size="11" dominant-baseline="central">1.00</text>
+    </g>
+
+    <!-- DEST (fixed right) -->
+    <circle id="dst-c" cx="630" cy="130" r="26" fill="#060e06" stroke="#3a7a3a" stroke-width="1.5"/>
+    <text x="630" y="124" text-anchor="middle" fill="#4fb84f" font-size="9" dominant-baseline="central">DEST</text>
+    <text id="winf-svg" x="630" y="138" text-anchor="middle" fill="#bfffbf" font-size="11" dominant-baseline="central">1.00</text>
+
+    <text id="time-lbl" x="340" y="14" text-anchor="middle" fill="#2a5a2a" font-size="10">t = 0.0</text>
   </svg>
 
   <div class="factor-row">
@@ -270,17 +298,17 @@
       <div class="bar-wrap"><div class="bar-fill" id="f1-bar" style="width:100%;background:#378ADD"></div></div>
     </div>
     <div class="factor-block">
-      <div class="factor-title">Distance attenuation</div>
+      <div class="factor-title">Via Node A</div>
       <div class="factor-number" id="f2-num">1.00</div>
       <div class="bar-wrap"><div class="bar-fill" id="f2-bar" style="width:100%;background:#1D9E75"></div></div>
     </div>
     <div class="factor-block">
-      <div class="factor-title">Temporal decay e^&minus;&lambda;t</div>
+      <div class="factor-title">Via Node B</div>
       <div class="factor-number" id="f3-num">1.00</div>
       <div class="bar-wrap"><div class="bar-fill" id="f3-bar" style="width:100%;background:#BA7517"></div></div>
     </div>
     <div class="factor-block result">
-      <div class="factor-title">W_influence</div>
+      <div class="factor-title">W_influence (max)</div>
       <div class="factor-number" id="f-result">1.000</div>
       <div class="bar-wrap"><div class="bar-fill" id="f-result-bar" style="width:100%;background:#7fff7f"></div></div>
     </div>
@@ -291,11 +319,6 @@
       <span class="slider-label">W_source &nbsp;(reputation)</span>
       <input type="range" id="sl-wsrc" min="0" max="100" value="100">
       <span class="slider-val" id="lbl-wsrc">1.00</span>
-    </div>
-    <div class="slider-row">
-      <span class="slider-label">dist &nbsp;(sub-sonic)</span>
-      <input type="range" id="sl-dist" min="0" max="100" value="0">
-      <span class="slider-val" id="lbl-dist">0.0</span>
     </div>
     <div class="slider-row">
       <span class="slider-label">t &nbsp;(time elapsed)</span>
@@ -356,43 +379,181 @@
 </div>
 
 <script>
-function update() {
-  const wsrc = document.getElementById('sl-wsrc').value / 100;
-  const dist  = document.getElementById('sl-dist').value / 10;
-  const t     = document.getElementById('sl-t').value / 10;
-  const lam   = document.getElementById('sl-lam').value / 100;
+const R = 26;
+const nodes = {
+  src:  { x: 50,  y: 130 },
+  a:    { x: 280, y: 60  },
+  b:    { x: 280, y: 200 },
+  dst:  { x: 630, y: 130 }
+};
 
-  const f1 = wsrc;
-  const f2 = 1 / (1 + dist * dist);
-  const f3 = Math.exp(-lam * t);
-  const winf = f1 * f2 * f3;
-
-  document.getElementById('lbl-wsrc').textContent = wsrc.toFixed(2);
-  document.getElementById('lbl-dist').textContent  = dist.toFixed(1);
-  document.getElementById('lbl-t').textContent     = t.toFixed(1);
-  document.getElementById('lbl-lam').textContent   = lam.toFixed(2);
-
-  document.getElementById('f1-num').textContent = f1.toFixed(2);
-  document.getElementById('f2-num').textContent = f2.toFixed(2);
-  document.getElementById('f3-num').textContent = f3.toFixed(2);
-  document.getElementById('f-result').textContent = winf.toFixed(3);
-
-  document.getElementById('f1-bar').style.width  = (f1 * 100) + '%';
-  document.getElementById('f2-bar').style.width  = (f2 * 100) + '%';
-  document.getElementById('f3-bar').style.width  = (f3 * 100) + '%';
-  document.getElementById('f-result-bar').style.width = (winf * 100) + '%';
-
-  document.getElementById('wsrc-label').textContent = wsrc.toFixed(2);
-  document.getElementById('winf-svg').textContent   = winf.toFixed(3);
-  document.getElementById('dist-lbl').textContent   = 'dist = ' + dist.toFixed(1);
-  document.getElementById('time-lbl').textContent   = 't = ' + t.toFixed(1);
-
-  const line = document.getElementById('inf-line');
-  line.setAttribute('stroke-width', Math.max(0.5, winf * 8).toFixed(1));
-  line.setAttribute('opacity', Math.max(0.05, winf).toFixed(2));
+function dist2d(n1, n2) {
+  const dx = n1.x - n2.x, dy = n1.y - n2.y;
+  return Math.sqrt(dx*dx + dy*dy);
 }
 
-['sl-wsrc','sl-dist','sl-t','sl-lam'].forEach(id =>
+function scaledDist(n1, n2) {
+  return dist2d(n1, n2) / 200;
+}
+
+function attenuation(d) {
+  return 1 / (1 + d * d);
+}
+
+function edgePoints(n1, n2) {
+  const dx = n2.x - n1.x, dy = n2.y - n1.y;
+  const len = Math.sqrt(dx*dx + dy*dy) || 1;
+  return {
+    x1: n1.x + dx/len * R,
+    y1: n1.y + dy/len * R,
+    x2: n2.x - dx/len * R,
+    y2: n2.y - dy/len * R
+  };
+}
+
+function setLine(id, n1, n2, w, op) {
+  const l = document.getElementById(id);
+  const e = edgePoints(n1, n2);
+  l.setAttribute('x1', e.x1.toFixed(1)); l.setAttribute('y1', e.y1.toFixed(1));
+  l.setAttribute('x2', e.x2.toFixed(1)); l.setAttribute('y2', e.y2.toFixed(1));
+  l.setAttribute('stroke-width', Math.max(0.5, w).toFixed(1));
+  l.setAttribute('opacity', Math.max(0.04, op).toFixed(2));
+}
+
+function setDistLabel(id, n1, n2, d) {
+  const el = document.getElementById(id);
+  const mx = (n1.x + n2.x) / 2, my = (n1.y + n2.y) / 2;
+  const dx = n2.x - n1.x, dy = n2.y - n1.y;
+  const len = Math.sqrt(dx*dx+dy*dy)||1;
+  el.setAttribute('x', (mx - dy/len*14).toFixed(1));
+  el.setAttribute('y', (my + dx/len*14).toFixed(1));
+  el.textContent = 'd=' + d.toFixed(1);
+}
+
+function moveGroup(gId, cId, t1Id, t2Id, x, y) {
+  document.getElementById(cId).setAttribute('cx', x);
+  document.getElementById(cId).setAttribute('cy', y);
+  document.getElementById(t1Id).setAttribute('x', x);
+  document.getElementById(t1Id).setAttribute('y', y - 6);
+  document.getElementById(t2Id).setAttribute('x', x);
+  document.getElementById(t2Id).setAttribute('y', y + 8);
+}
+
+function update() {
+  const wsrc = document.getElementById('sl-wsrc').value / 100;
+  const t    = document.getElementById('sl-t').value / 10;
+  const lam  = document.getElementById('sl-lam').value / 100;
+  const f3   = Math.exp(-lam * t);
+
+  const dSA = scaledDist(nodes.src, nodes.a);
+  const dSB = scaledDist(nodes.src, nodes.b);
+  const dAD = scaledDist(nodes.a,   nodes.dst);
+  const dBD = scaledDist(nodes.b,   nodes.dst);
+
+  const wA  = wsrc * attenuation(dSA) * f3;
+  const wB  = wsrc * attenuation(dSB) * f3;
+  const wAD = wA * attenuation(dAD);
+  const wBD = wB * attenuation(dBD);
+  const winf = Math.max(wAD, wBD);
+
+  document.getElementById('lbl-wsrc').textContent = wsrc.toFixed(2);
+  document.getElementById('lbl-t').textContent    = t.toFixed(1);
+  document.getElementById('lbl-lam').textContent  = lam.toFixed(2);
+  document.getElementById('time-lbl').textContent = 't = ' + t.toFixed(1);
+
+  document.getElementById('wsrc-label').textContent = wsrc.toFixed(2);
+  document.getElementById('na-t2').textContent = wA.toFixed(3);
+  document.getElementById('nb-t2').textContent = wB.toFixed(3);
+  document.getElementById('winf-svg').textContent = winf.toFixed(3);
+
+  document.getElementById('f1-num').textContent = wsrc.toFixed(2);
+  document.getElementById('f2-num').textContent = wAD.toFixed(3);
+  document.getElementById('f3-num').textContent = wBD.toFixed(3);
+  document.getElementById('f-result').textContent = winf.toFixed(3);
+
+  document.getElementById('f1-bar').style.width = (wsrc * 100) + '%';
+  document.getElementById('f2-bar').style.width = (wAD * 100) + '%';
+  document.getElementById('f3-bar').style.width = (wBD * 100) + '%';
+  document.getElementById('f-result-bar').style.width = (winf * 100) + '%';
+
+  setLine('line-sa', nodes.src, nodes.a,   Math.max(2, wA  * 20), Math.max(0.2, wA));
+  setLine('line-sb', nodes.src, nodes.b,   Math.max(2, wB  * 20), Math.max(0.2, wB));
+  setLine('line-ad', nodes.a,   nodes.dst, Math.max(2, wAD * 20), Math.max(0.2, wAD));
+  setLine('line-bd', nodes.b,   nodes.dst, Math.max(2, wBD * 20), Math.max(0.2, wBD));
+
+  setDistLabel('dlbl-sa', nodes.src, nodes.a,   dSA);
+  setDistLabel('dlbl-sb', nodes.src, nodes.b,   dSB);
+  setDistLabel('dlbl-ad', nodes.a,   nodes.dst, dAD);
+  setDistLabel('dlbl-bd', nodes.b,   nodes.dst, dBD);
+}
+
+// Drag logic
+let dragging = null, dragOffX = 0, dragOffY = 0;
+
+function getSVGPoint(svg, clientX, clientY) {
+  const pt = svg.createSVGPoint();
+  pt.x = clientX; pt.y = clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+const svg = document.getElementById('node-svg');
+
+['node-a', 'node-b'].forEach(id => {
+  const el = document.getElementById(id);
+  const nodeKey = id === 'node-a' ? 'a' : 'b';
+  el.addEventListener('mousedown', e => {
+    dragging = nodeKey;
+    const p = getSVGPoint(svg, e.clientX, e.clientY);
+    dragOffX = p.x - nodes[nodeKey].x;
+    dragOffY = p.y - nodes[nodeKey].y;
+    el.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+  el.addEventListener('touchstart', e => {
+    dragging = nodeKey;
+    const p = getSVGPoint(svg, e.touches[0].clientX, e.touches[0].clientY);
+    dragOffX = p.x - nodes[nodeKey].x;
+    dragOffY = p.y - nodes[nodeKey].y;
+    e.preventDefault();
+  }, { passive: false });
+});
+
+svg.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  const p = getSVGPoint(svg, e.clientX, e.clientY);
+  nodes[dragging].x = Math.max(R+5, Math.min(680-R-5, p.x - dragOffX));
+  nodes[dragging].y = Math.max(R+5, Math.min(260-R-5, p.y - dragOffY));
+  const cId  = dragging === 'a' ? 'na-c'  : 'nb-c';
+  const t1Id = dragging === 'a' ? 'na-t1' : 'nb-t1';
+  const t2Id = dragging === 'a' ? 'na-t2' : 'nb-t2';
+  moveGroup('node-'+dragging, cId, t1Id, t2Id, nodes[dragging].x, nodes[dragging].y);
+  update();
+});
+
+svg.addEventListener('touchmove', e => {
+  if (!dragging) return;
+  const p = getSVGPoint(svg, e.touches[0].clientX, e.touches[0].clientY);
+  nodes[dragging].x = Math.max(R+5, Math.min(680-R-5, p.x - dragOffX));
+  nodes[dragging].y = Math.max(R+5, Math.min(260-R-5, p.y - dragOffY));
+  const cId  = dragging === 'a' ? 'na-c'  : 'nb-c';
+  const t1Id = dragging === 'a' ? 'na-t1' : 'nb-t1';
+  const t2Id = dragging === 'a' ? 'na-t2' : 'nb-t2';
+  moveGroup('node-'+dragging, cId, t1Id, t2Id, nodes[dragging].x, nodes[dragging].y);
+  update();
+  e.preventDefault();
+}, { passive: false });
+
+function stopDrag() {
+  if (dragging) {
+    document.getElementById('node-'+dragging).style.cursor = 'grab';
+    dragging = null;
+  }
+}
+svg.addEventListener('mouseup', stopDrag);
+svg.addEventListener('mouseleave', stopDrag);
+svg.addEventListener('touchend', stopDrag);
+
+['sl-wsrc','sl-t','sl-lam'].forEach(id =>
   document.getElementById(id).addEventListener('input', update)
 );
 update();
