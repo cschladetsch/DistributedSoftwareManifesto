@@ -55,9 +55,9 @@ Without a central server, how is order maintained?
 
 The answer is the Summation of Influence. Each node carries an Influence Weight. When Node A receives data from Node B, it does not treat it as ground truth. It calculates an Influence Delta using the inverse square law and temporal decay:
 
-```
-W_influence = W_source / (1 + dist²) × e^(−λt)
-```
+$$
+W_{\text{influence}} = \frac{W_{\text{source}}}{1 + \text{dist}^2} \times e^{-\lambda t}
+$$
 
 Where `W_source` is the sender's historical reliability score, `dist` is the sub-sonic distance, and `e^(−λt)` is message entropy over time.
 
