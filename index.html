@@ -1,93 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Organic Continuum</title>
 <style>
-.factor-label { font-size: 12px; color: var(--color-text-secondary); }
-.factor-val { font-size: 13px; font-weight: 500; color: var(--color-text-primary); min-width: 40px; text-align: right; }
-.slider-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
-.slider-row input[type=range] { flex: 1; accent-color: var(--color-text-info); }
-.w-inf-val { font-size: 28px; font-weight: 500; color: var(--color-text-primary); }
-.w-inf-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
-.formula-box { font-family: var(--font-mono); font-size: 13px; color: var(--color-text-secondary); text-align: center; margin-bottom: 16px; letter-spacing: 0.02em; }
-.factor-block { border: 1px solid var(--color-border-tertiary); border-radius: 8px; padding: 10px 14px; flex: 1; min-width: 0; }
-.factor-title { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
-.factor-number { font-size: 20px; font-weight: 500; }
-.bar-wrap { height: 6px; background: var(--color-border-tertiary); border-radius: 3px; margin-top: 6px; overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 3px; transition: width 0.15s; }
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0e0a;
+    color: #7fff7f;
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .scanline {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0,0,0,0.08) 3px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  h1 {
+    font-size: 18px;
+    color: #bfffbf;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  h2 {
+    font-size: 13px;
+    color: #4fb84f;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    border-bottom: 1px solid #1a3a1a;
+    padding-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: 12px;
+    color: #4fb84f;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin: 32px 0 16px;
+    border-left: 2px solid #3a7a3a;
+    padding-left: 10px;
+  }
+
+  .formula-display {
+    background: #060e06;
+    border: 1px solid #1a3a1a;
+    border-radius: 4px;
+    padding: 16px 20px;
+    text-align: center;
+    font-size: 15px;
+    color: #bfffbf;
+    letter-spacing: 0.05em;
+    margin-bottom: 24px;
+  }
+
+  svg text { font-family: 'Share Tech Mono', monospace; }
+
+  .node-diagram {
+    width: 100%;
+    display: block;
+    margin-bottom: 20px;
+  }
+
+  .factor-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .factor-block {
+    flex: 1;
+    background: #060e06;
+    border: 1px solid #1a3a1a;
+    border-radius: 4px;
+    padding: 10px 12px;
+    min-width: 0;
+  }
+
+  .factor-block.result {
+    border-color: #3a7a3a;
+  }
+
+  .factor-title {
+    font-size: 10px;
+    color: #4fb84f;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .factor-number {
+    font-size: 20px;
+    color: #bfffbf;
+    margin-bottom: 6px;
+  }
+
+  .factor-block.result .factor-number {
+    color: #7fff7f;
+  }
+
+  .bar-wrap {
+    height: 4px;
+    background: #1a3a1a;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.12s;
+  }
+
+  .controls {
+    background: #060e06;
+    border: 1px solid #1a3a1a;
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin-bottom: 32px;
+  }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0;
+  }
+
+  .slider-label {
+    font-size: 12px;
+    color: #4fb84f;
+    min-width: 180px;
+  }
+
+  .slider-row input[type=range] {
+    flex: 1;
+    accent-color: #7fff7f;
+    cursor: pointer;
+    background: transparent;
+  }
+
+  .slider-val {
+    font-size: 13px;
+    color: #bfffbf;
+    min-width: 40px;
+    text-align: right;
+  }
+
+  .prose {
+    color: #5faf5f;
+    font-size: 13px;
+    line-height: 1.8;
+    margin-bottom: 16px;
+    border-left: 1px solid #1a3a1a;
+    padding-left: 14px;
+  }
+
+  .key-term {
+    color: #bfffbf;
+  }
+
+  .links {
+    margin-top: 40px;
+    border-top: 1px solid #1a3a1a;
+    padding-top: 20px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  a {
+    color: #7fff7f;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    font-size: 12px;
+  }
+
+  a:hover { color: #bfffbf; }
+
+  .blink {
+    animation: blink 1.2s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .tag {
+    display: inline-block;
+    border: 1px solid #1a3a1a;
+    color: #4fb84f;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    margin: 2px;
+    letter-spacing: 0.08em;
+  }
+
+  .footer {
+    margin-top: 40px;
+    font-size: 11px;
+    color: #2a5a2a;
+    text-align: center;
+    letter-spacing: 0.1em;
+  }
 </style>
+</head>
+<body>
+<div class="scanline"></div>
+<div class="container">
 
-<div style="padding: 20px 0 8px;">
-  <div class="formula-box">W_influence = W_source &nbsp;×&nbsp; 1/(1 + dist²) &nbsp;×&nbsp; e^(−λt)</div>
+  <h1>THE ORGANIC CONTINUUM <span class="blink">_</span></h1>
+  <h2>Influence + Wavefront Migration &mdash; Christian Schladetsch</h2>
 
-  <svg width="100%" viewBox="0 0 680 140" style="display:block;margin-bottom:16px;">
+  <div class="section-title">I. Influence Weight Model</div>
+
+  <div class="formula-display">
+    W_influence &nbsp;=&nbsp; W_source &nbsp;&times;&nbsp; 1/(1 + dist&sup2;) &nbsp;&times;&nbsp; e<sup>&minus;&lambda;t</sup>
+  </div>
+
+  <svg class="node-diagram" viewBox="0 0 680 120">
     <defs>
       <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 1L8 5L2 9" fill="none" stroke="#7fff7f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </marker>
     </defs>
-    <!-- Source node -->
-    <g id="src-node">
-      <circle cx="120" cy="70" r="32" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
-      <text x="120" y="66" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:var(--color-text-secondary)">source</text>
-      <text id="wsrc-label" x="120" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:var(--color-text-primary)">1.00</text>
-    </g>
-    <!-- Receiver node -->
-    <circle id="recv-ring" cx="560" cy="70" r="32" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
-    <text x="560" y="66" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:var(--color-text-secondary)">node B</text>
-    <!-- Influence line -->
-    <line id="inf-line" x1="153" y1="70" x2="526" y2="70" stroke="#378ADD" stroke-width="4" stroke-linecap="round" marker-end="url(#arr)" opacity="0.9"/>
-    <!-- W_influence result in receiver -->
-    <text id="winf-line" x="560" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:var(--color-text-primary)">0.50</text>
-    <!-- Distance label -->
-    <text id="dist-label" x="340" y="108" text-anchor="middle" style="font-size:11px;fill:var(--color-text-tertiary)">dist = 1.0</text>
-    <!-- Time decay label -->
-    <text id="decay-label-svg" x="340" y="30" text-anchor="middle" style="font-size:11px;fill:var(--color-text-tertiary)">t = 0.0</text>
+    <circle cx="100" cy="60" r="30" fill="none" stroke="#1a3a1a" stroke-width="1.5"/>
+    <text x="100" y="54" text-anchor="middle" fill="#4fb84f" font-size="10" dominant-baseline="central">SOURCE</text>
+    <text id="wsrc-label" x="100" y="70" text-anchor="middle" fill="#bfffbf" font-size="13" dominant-baseline="central">1.00</text>
+
+    <line id="inf-line" x1="131" y1="60" x2="548" y2="60" stroke="#7fff7f" stroke-width="5" stroke-linecap="round" marker-end="url(#arr)" opacity="0.9"/>
+
+    <circle cx="580" cy="60" r="30" fill="none" stroke="#1a3a1a" stroke-width="1.5"/>
+    <text x="580" y="54" text-anchor="middle" fill="#4fb84f" font-size="10" dominant-baseline="central">NODE B</text>
+    <text id="winf-svg" x="580" y="70" text-anchor="middle" fill="#bfffbf" font-size="13" dominant-baseline="central">1.00</text>
+
+    <text id="dist-lbl" x="340" y="90" text-anchor="middle" fill="#2a5a2a" font-size="11">dist = 0.0</text>
+    <text id="time-lbl" x="340" y="18" text-anchor="middle" fill="#2a5a2a" font-size="11">t = 0.0</text>
   </svg>
 
-  <!-- Three factor blocks -->
-  <div style="display:flex;gap:10px;margin-bottom:18px;">
+  <div class="factor-row">
     <div class="factor-block">
       <div class="factor-title">Reputation (W_source)</div>
-      <div class="factor-number" id="f1-num" style="color:#378ADD">1.00</div>
+      <div class="factor-number" id="f1-num">1.00</div>
       <div class="bar-wrap"><div class="bar-fill" id="f1-bar" style="width:100%;background:#378ADD"></div></div>
     </div>
     <div class="factor-block">
       <div class="factor-title">Distance attenuation</div>
-      <div class="factor-number" id="f2-num" style="color:#1D9E75">1.00</div>
+      <div class="factor-number" id="f2-num">1.00</div>
       <div class="bar-wrap"><div class="bar-fill" id="f2-bar" style="width:100%;background:#1D9E75"></div></div>
     </div>
     <div class="factor-block">
-      <div class="factor-title">Temporal decay (e^−λt)</div>
-      <div class="factor-number" id="f3-num" style="color:#BA7517">1.00</div>
+      <div class="factor-title">Temporal decay e^&minus;&lambda;t</div>
+      <div class="factor-number" id="f3-num">1.00</div>
       <div class="bar-wrap"><div class="bar-fill" id="f3-bar" style="width:100%;background:#BA7517"></div></div>
     </div>
-    <div class="factor-block" style="background:var(--color-background-secondary)">
+    <div class="factor-block result">
       <div class="factor-title">W_influence</div>
-      <div class="factor-number" id="f-result" style="color:var(--color-text-primary)">1.00</div>
-      <div class="bar-wrap"><div class="bar-fill" id="f-result-bar" style="width:100%;background:var(--color-text-secondary)"></div></div>
+      <div class="factor-number" id="f-result">1.000</div>
+      <div class="bar-wrap"><div class="bar-fill" id="f-result-bar" style="width:100%;background:#7fff7f"></div></div>
     </div>
   </div>
 
-  <!-- Sliders -->
-  <div style="border: 1px solid var(--color-border-tertiary); border-radius:8px; padding: 12px 16px;">
+  <div class="controls">
     <div class="slider-row">
-      <span class="factor-label" style="min-width:130px">W_source (reputation)</span>
+      <span class="slider-label">W_source &nbsp;(reputation)</span>
       <input type="range" id="sl-wsrc" min="0" max="100" value="100">
-      <span class="factor-val" id="lbl-wsrc">1.00</span>
+      <span class="slider-val" id="lbl-wsrc">1.00</span>
     </div>
     <div class="slider-row">
-      <span class="factor-label" style="min-width:130px">dist (sub-sonic)</span>
+      <span class="slider-label">dist &nbsp;(sub-sonic)</span>
       <input type="range" id="sl-dist" min="0" max="100" value="0">
-      <span class="factor-val" id="lbl-dist">0.0</span>
+      <span class="slider-val" id="lbl-dist">0.0</span>
     </div>
     <div class="slider-row">
-      <span class="factor-label" style="min-width:130px">t (time elapsed)</span>
+      <span class="slider-label">t &nbsp;(time elapsed)</span>
       <input type="range" id="sl-t" min="0" max="100" value="0">
-      <span class="factor-val" id="lbl-t">0.0</span>
+      <span class="slider-val" id="lbl-t">0.0</span>
     </div>
     <div class="slider-row">
-      <span class="factor-label" style="min-width:130px">λ (decay rate)</span>
+      <span class="slider-label">&lambda; &nbsp;(decay rate)</span>
       <input type="range" id="sl-lam" min="1" max="50" value="10">
-      <span class="factor-val" id="lbl-lam">0.10</span>
+      <span class="slider-val" id="lbl-lam">0.10</span>
     </div>
   </div>
+
+  <div class="section-title">II. Core Principles</div>
+
+  <p class="prose">
+    <span class="key-term">Propagation-capped state.</span> Information travels at a bounded sub-sonic velocity. Nodes see influence approaching before it arrives -- jagged state transitions become smooth curves.
+  </p>
+  <p class="prose">
+    <span class="key-term">Saliency-driven sampling.</span> Autonomous agents sample at rates proportional to observed activity. Unobserved regions drop to near-zero frequency. Computation follows attention.
+  </p>
+  <p class="prose">
+    <span class="key-term">Reputation-weighted consensus.</span> No central authority. Misbehaving nodes decay in influence until the system stops listening. No crash, no banishment.
+  </p>
+  <p class="prose">
+    <span class="key-term">Live continuation migration.</span> Running execution state flows between machines as a wavefront, pre-warming destination nodes. No stop-the-world. No hard cutover.
+  </p>
+  <p class="prose">
+    <span class="key-term">Propagation-speed GC.</span> The marking front moves at the same velocity as mutations. The janitor and the resident move at the same speed.
+  </p>
+
+  <div class="section-title">III. Reference Implementation</div>
+
+  <p class="prose">
+    <span class="key-term">KAI</span> &mdash; a distributed object model in C++ with reflection, persistence, cross-process communication, and an incremental tri-color garbage collector. Core behaviour has been stable for over 16 years.
+  </p>
+
+  <div style="margin-top:16px;">
+    <span class="tag">DISTRIBUTED SYSTEMS</span>
+    <span class="tag">C++</span>
+    <span class="tag">GAME SERVERS</span>
+    <span class="tag">SYSTEMS DESIGN</span>
+    <span class="tag">ARCHITECTURE</span>
+  </div>
+
+  <div class="links">
+    <a href="https://github.com/cschladetsch/DistributedSoftwareManifesto">&gt; Full Manifesto (GitHub)</a>
+    <a href="https://github.com/cschladetsch/KAI">&gt; KAI Reference Implementation</a>
+    <a href="https://www.linkedin.com/in/christianschladetsch/">&gt; LinkedIn</a>
+  </div>
+
+  <div class="footer">
+    NO GLOBAL STATE. NODES EXPERIENCE LOCAL TRUTH VIA INFLUENCE.<br>
+    WAVEFRONTS PROVIDE INERTIA. NODES PRE-PATCH BEFORE ARRIVAL.<br>
+    CONTINUATIONS MIGRATE WITHOUT STOP-THE-WORLD.
+  </div>
+
 </div>
 
 <script>
@@ -118,12 +383,12 @@ function update() {
   document.getElementById('f-result-bar').style.width = (winf * 100) + '%';
 
   document.getElementById('wsrc-label').textContent = wsrc.toFixed(2);
-  document.getElementById('winf-line').textContent  = winf.toFixed(3);
-  document.getElementById('dist-label').textContent = 'dist = ' + dist.toFixed(1);
-  document.getElementById('decay-label-svg').textContent = 't = ' + t.toFixed(1);
+  document.getElementById('winf-svg').textContent   = winf.toFixed(3);
+  document.getElementById('dist-lbl').textContent   = 'dist = ' + dist.toFixed(1);
+  document.getElementById('time-lbl').textContent   = 't = ' + t.toFixed(1);
 
   const line = document.getElementById('inf-line');
-  line.setAttribute('stroke-width', Math.max(1, winf * 10).toFixed(1));
+  line.setAttribute('stroke-width', Math.max(0.5, winf * 8).toFixed(1));
   line.setAttribute('opacity', Math.max(0.05, winf).toFixed(2));
 }
 
@@ -132,3 +397,5 @@ function update() {
 );
 update();
 </script>
+</body>
+</html>
