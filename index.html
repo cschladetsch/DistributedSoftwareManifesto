@@ -1,0 +1,134 @@
+<style>
+.factor-label { font-size: 12px; color: var(--color-text-secondary); }
+.factor-val { font-size: 13px; font-weight: 500; color: var(--color-text-primary); min-width: 40px; text-align: right; }
+.slider-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+.slider-row input[type=range] { flex: 1; accent-color: var(--color-text-info); }
+.w-inf-val { font-size: 28px; font-weight: 500; color: var(--color-text-primary); }
+.w-inf-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.formula-box { font-family: var(--font-mono); font-size: 13px; color: var(--color-text-secondary); text-align: center; margin-bottom: 16px; letter-spacing: 0.02em; }
+.factor-block { border: 1px solid var(--color-border-tertiary); border-radius: 8px; padding: 10px 14px; flex: 1; min-width: 0; }
+.factor-title { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.factor-number { font-size: 20px; font-weight: 500; }
+.bar-wrap { height: 6px; background: var(--color-border-tertiary); border-radius: 3px; margin-top: 6px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 3px; transition: width 0.15s; }
+</style>
+
+<div style="padding: 20px 0 8px;">
+  <div class="formula-box">W_influence = W_source &nbsp;×&nbsp; 1/(1 + dist²) &nbsp;×&nbsp; e^(−λt)</div>
+
+  <svg width="100%" viewBox="0 0 680 140" style="display:block;margin-bottom:16px;">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+    <!-- Source node -->
+    <g id="src-node">
+      <circle cx="120" cy="70" r="32" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+      <text x="120" y="66" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:var(--color-text-secondary)">source</text>
+      <text id="wsrc-label" x="120" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:var(--color-text-primary)">1.00</text>
+    </g>
+    <!-- Receiver node -->
+    <circle id="recv-ring" cx="560" cy="70" r="32" fill="none" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+    <text x="560" y="66" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:var(--color-text-secondary)">node B</text>
+    <!-- Influence line -->
+    <line id="inf-line" x1="153" y1="70" x2="526" y2="70" stroke="#378ADD" stroke-width="4" stroke-linecap="round" marker-end="url(#arr)" opacity="0.9"/>
+    <!-- W_influence result in receiver -->
+    <text id="winf-line" x="560" y="83" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:var(--color-text-primary)">0.50</text>
+    <!-- Distance label -->
+    <text id="dist-label" x="340" y="108" text-anchor="middle" style="font-size:11px;fill:var(--color-text-tertiary)">dist = 1.0</text>
+    <!-- Time decay label -->
+    <text id="decay-label-svg" x="340" y="30" text-anchor="middle" style="font-size:11px;fill:var(--color-text-tertiary)">t = 0.0</text>
+  </svg>
+
+  <!-- Three factor blocks -->
+  <div style="display:flex;gap:10px;margin-bottom:18px;">
+    <div class="factor-block">
+      <div class="factor-title">Reputation (W_source)</div>
+      <div class="factor-number" id="f1-num" style="color:#378ADD">1.00</div>
+      <div class="bar-wrap"><div class="bar-fill" id="f1-bar" style="width:100%;background:#378ADD"></div></div>
+    </div>
+    <div class="factor-block">
+      <div class="factor-title">Distance attenuation</div>
+      <div class="factor-number" id="f2-num" style="color:#1D9E75">1.00</div>
+      <div class="bar-wrap"><div class="bar-fill" id="f2-bar" style="width:100%;background:#1D9E75"></div></div>
+    </div>
+    <div class="factor-block">
+      <div class="factor-title">Temporal decay (e^−λt)</div>
+      <div class="factor-number" id="f3-num" style="color:#BA7517">1.00</div>
+      <div class="bar-wrap"><div class="bar-fill" id="f3-bar" style="width:100%;background:#BA7517"></div></div>
+    </div>
+    <div class="factor-block" style="background:var(--color-background-secondary)">
+      <div class="factor-title">W_influence</div>
+      <div class="factor-number" id="f-result" style="color:var(--color-text-primary)">1.00</div>
+      <div class="bar-wrap"><div class="bar-fill" id="f-result-bar" style="width:100%;background:var(--color-text-secondary)"></div></div>
+    </div>
+  </div>
+
+  <!-- Sliders -->
+  <div style="border: 1px solid var(--color-border-tertiary); border-radius:8px; padding: 12px 16px;">
+    <div class="slider-row">
+      <span class="factor-label" style="min-width:130px">W_source (reputation)</span>
+      <input type="range" id="sl-wsrc" min="0" max="100" value="100">
+      <span class="factor-val" id="lbl-wsrc">1.00</span>
+    </div>
+    <div class="slider-row">
+      <span class="factor-label" style="min-width:130px">dist (sub-sonic)</span>
+      <input type="range" id="sl-dist" min="0" max="100" value="0">
+      <span class="factor-val" id="lbl-dist">0.0</span>
+    </div>
+    <div class="slider-row">
+      <span class="factor-label" style="min-width:130px">t (time elapsed)</span>
+      <input type="range" id="sl-t" min="0" max="100" value="0">
+      <span class="factor-val" id="lbl-t">0.0</span>
+    </div>
+    <div class="slider-row">
+      <span class="factor-label" style="min-width:130px">λ (decay rate)</span>
+      <input type="range" id="sl-lam" min="1" max="50" value="10">
+      <span class="factor-val" id="lbl-lam">0.10</span>
+    </div>
+  </div>
+</div>
+
+<script>
+function update() {
+  const wsrc = document.getElementById('sl-wsrc').value / 100;
+  const dist  = document.getElementById('sl-dist').value / 10;
+  const t     = document.getElementById('sl-t').value / 10;
+  const lam   = document.getElementById('sl-lam').value / 100;
+
+  const f1 = wsrc;
+  const f2 = 1 / (1 + dist * dist);
+  const f3 = Math.exp(-lam * t);
+  const winf = f1 * f2 * f3;
+
+  document.getElementById('lbl-wsrc').textContent = wsrc.toFixed(2);
+  document.getElementById('lbl-dist').textContent  = dist.toFixed(1);
+  document.getElementById('lbl-t').textContent     = t.toFixed(1);
+  document.getElementById('lbl-lam').textContent   = lam.toFixed(2);
+
+  document.getElementById('f1-num').textContent = f1.toFixed(2);
+  document.getElementById('f2-num').textContent = f2.toFixed(2);
+  document.getElementById('f3-num').textContent = f3.toFixed(2);
+  document.getElementById('f-result').textContent = winf.toFixed(3);
+
+  document.getElementById('f1-bar').style.width  = (f1 * 100) + '%';
+  document.getElementById('f2-bar').style.width  = (f2 * 100) + '%';
+  document.getElementById('f3-bar').style.width  = (f3 * 100) + '%';
+  document.getElementById('f-result-bar').style.width = (winf * 100) + '%';
+
+  document.getElementById('wsrc-label').textContent = wsrc.toFixed(2);
+  document.getElementById('winf-line').textContent  = winf.toFixed(3);
+  document.getElementById('dist-label').textContent = 'dist = ' + dist.toFixed(1);
+  document.getElementById('decay-label-svg').textContent = 't = ' + t.toFixed(1);
+
+  const line = document.getElementById('inf-line');
+  line.setAttribute('stroke-width', Math.max(1, winf * 10).toFixed(1));
+  line.setAttribute('opacity', Math.max(0.05, winf).toFixed(2));
+}
+
+['sl-wsrc','sl-dist','sl-t','sl-lam'].forEach(id =>
+  document.getElementById(id).addEventListener('input', update)
+);
+update();
+</script>

@@ -65,6 +65,8 @@ A misbehaving node — whether due to a bug or deliberate fault injection — do
 
 This mirrors flocking behavior in nature: local rules, applied consistently, produce coherent global order without central coordination.
 
+See the [live interactive model](https://cschladetsch.github.io/DistributedSoftwareManifesto) for the influence weight formula.
+
 ---
 
 ## V. Live Continuation Migration
