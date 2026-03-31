@@ -59,7 +59,7 @@ $$
 W_{\text{influence}} = \frac{W_{\text{source}}}{1 + \text{dist}^2} \times e^{-\lambda t}
 $$
 
-Where `W_source` is the sender's historical reliability score, `dist` is the sub-sonic distance, and `e^(−λt)` is message entropy over time.
+Where $W_{\text{source}}$ is the sender's historical reliability score, $\text{dist}$ is the sub-sonic distance, and $e^{-\lambda t}$ is message entropy over time.
 
 A misbehaving node — whether due to a bug or deliberate fault injection — does not cause a crash. The surrounding nodes detect deviation from local averages. The rogue node's reputation weight decays statistically until its influence approaches zero. No explicit banishment is required; the system stops weighting its output.
 
