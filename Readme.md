@@ -16,6 +16,11 @@ The physics of our universe do not support global simultaneity. Einstein establi
 
 The Organic Continuum is an architectural model that accepts this constraint rather than fighting it. It replaces synchronization as a goal with *perspective consistency* — each node maintains a coherent local view, and the system's behavior emerges from the interaction of those views.
 
+
+![Demo](Demo1.jpg)
+
+See the [live interactive model](https://cschladetsch.github.io/DistributedSoftwareManifesto) for the influence weight formula.
+
 ---
 
 ## II. Propagation-Bounded State: Sub-Sonic Physics
