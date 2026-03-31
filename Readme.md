@@ -4,7 +4,7 @@
 
 ![Organic Continuum diagram](diagram.png)
 
-Reference: [KAI](https://github.com/cschladetsch//KAI) — a distributed object model for C++ with reflection, persistence, cross-process communication, and an incremental tri-color garbage collector.
+Reference: [KAI](https://github.com/cschladetsch/KAI) — a distributed object model for C++ with reflection, persistence, cross-process communication, and an incremental tri-color garbage collector.
 
 ---
 
