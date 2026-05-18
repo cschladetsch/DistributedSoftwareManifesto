@@ -2,7 +2,7 @@
 
 ## An Information-Physics Model for Distributed Systems
 
-Reference implementation: [KAI](https://github.com/cschladetsch/KAI) — a distributed object model for C++ with reflection, persistence, cross-process communication, and an incremental tri-color garbage collector.
+Reference implementation: [KAI](https://github.com/cschladetsch/KAI). This a distributed object model for C++ with reflection, persistence, cross-process communication, and an incremental tri-color garbage collector.
 
 ---
 
@@ -10,12 +10,11 @@ Reference implementation: [KAI](https://github.com/cschladetsch/KAI) — a distr
 
 Distributed computing has long operated on a flawed assumption: that a network of machines can and should share a singular, synchronized reality.
 
-This assumption has costs. Paxos and Raft exist to force consensus. NTP exists to approximate a universal clock. Distributed locks exist to freeze system state long enough to observe it safely. These are not solutions to hard problems — they are compensation mechanisms for a bad premise.
+This assumption has costs. Paxos and Raft exist to force consensus. NTP exists to approximate a universal clock. Distributed locks exist to freeze system state long enough to observe it safely. These are not solutions to hard problems; they are compensation mechanisms for a bad premise.
 
 The physics of our universe do not support global simultaneity. Einstein established that simultaneity is observer-relative. Any architecture that requires the opposite is fighting the laws of the medium it runs on.
 
-Propagation Manifold is an architectural model that accepts this constraint rather than fighting it. It replaces synchronization as a goal with *perspective consistency* — each node maintains a coherent local view, and the system's behaviour emerges from the interaction of those views.
-
+Propagation Manifold is an architectural model that accepts this constraint rather than fighting it. It replaces synchronization as a goal with *perspective consistency*. Each node maintains a coherent local view, and the system's behaviour emerges from the interaction of those views.
 
 ![Demo](Demo1.jpg)
 
@@ -25,14 +24,13 @@ See the [live interactive model](https://cschladetsch.github.io/DistributedSoftw
 
 ## II. Propagation-Bounded State: Propagation Physics
 
-Standard network architectures treat state changes as instantaneous from the software's perspective. An object is at position A; then it is at position B. This step-function model is the root cause of jitter — the discontinuity propagates through the system as instability.
+Standard network architectures treat state changes as instantaneous from the software's perspective. An object is at position A; then it is at position B. This step-function model is the root cause of jitter. The discontinuity propagates through the system as instability.
 
 Propagation Manifold caps information propagation at a configurable propagation velocity. This is the Propagation Constant.
 
-This has a useful consequence: when an event occurs at Node A, it does not immediately update Node B. Instead, it generates a *wavefront* that travels through the network fabric at the defined velocity. Because the wave has a measurable speed, distant nodes observe the *approach* of an influence before it arrives. This provides lead time — the most valuable resource in distributed state management.
+This has a useful consequence: when an event occurs at Node A, it does not immediately update Node B. Instead, it generates a *wavefront* that travels through the network fabric at the defined velocity. Because the wave has a measurable speed, distant nodes observe the *approach* of an influence before it arrives. This provides lead time. The most valuable resource in distributed state management.
 
 State transitions are handled as curves rather than step functions. The result is phase stability: the system absorbs change rather than snapping between states.
-
 
 ![Diagram](diagram.png)
 
@@ -40,15 +38,15 @@ State transitions are handled as curves rather than step functions. The result i
 
 ## III. Saliency-Driven Sampling: The Witness Layer
 
-Traditional distributed systems stream data continuously. This is expensive and largely unnecessary — most of the data being streamed describes regions of the simulation that nobody is currently observing.
+Traditional distributed systems stream data continuously. This is expensive and largely unnecessary. Most of the data being streamed describes regions of the simulation that nobody is currently observing.
 
-Propagation Manifold samples rather than streams. Autonomous agents — called Witnesses — reside at every coordinate in the network fabric. Every N milliseconds, a Witness samples its local environment, collapses the surrounding influence waves into a stable snapshot, and records it.
+Propagation Manifold samples rather than streams. Autonomous agents, called Witnesses, reside at every coordinate in the network fabric. Every N milliseconds, a Witness samples its local environment, collapses the surrounding influence waves into a stable snapshot, and records it.
 
 Two properties follow from this:
 
 **Natural hysteresis.** If a variable oscillates between states a thousand times between samples, the rest of the system never observes the oscillation. High-frequency noise is filtered by the act of observation itself.
 
-**Saliency-proportional compute.** The sampling rate is governed by local activity. Witnesses in regions with active observers run at 60Hz. Witnesses in unobserved regions drop to a quiescent low-frequency state — once per minute or less. Computation is allocated proportionally to what is being observed. Unobserved regions cost almost nothing.
+**Saliency-proportional compute.** The sampling rate is governed by local activity. Witnesses in regions with active observers run at 60Hz. Witnesses in unobserved regions drop to a quiescent low-frequency state; once per minute or less. Computation is allocated proportionally to what is being observed. Unobserved regions cost almost nothing.
 
 This is a form of adaptive scaling: the system self-organises its resource allocation based on attention rather than a fixed global tick rate.
 
@@ -66,7 +64,7 @@ $$
 
 Where $W_{\text{source}}$ is the sender's historical reliability score, $\text{dist}$ is the propagation-bounded distance, and $e^{-\lambda t}$ is message entropy over time.
 
-A misbehaving node — whether due to a bug or deliberate fault injection — does not cause a crash. The surrounding nodes detect deviation from local averages. The rogue node's reputation weight decays statistically until its influence approaches zero. No explicit banishment is required; the system stops weighting its output.
+A misbehaving node; whether due to a bug or deliberate fault injection, does not cause a crash. The surrounding nodes detect deviation from local averages. The rogue node's reputation weight decays statistically until its influence approaches zero. No explicit banishment is required; the system stops weighting its output.
 
 This mirrors flocking behaviour in nature: local rules, applied consistently, produce coherent global order without central coordination.
 
@@ -80,7 +78,7 @@ Moving a live execution — a Continuation — from one machine to another witho
 
 In the Propagation Manifold, a Continuation in transit is treated as a traveling state wavefront moving at the configured propagation velocity through the network. As it passes through intermediate nodes, the Witnesses along the path record its passage and update their local directional vectors, creating a propagation trail.
 
-By the time the Continuation arrives at its destination, the neighboring machines have already pre-patched their references. They saw the state approaching and prepared. The handoff is not a hard cutover — it is the final step in a gradual handover that began the moment migration was initiated.
+By the time the Continuation arrives at its destination, the neighboring machines have already pre-patched their references. They saw the state approaching and prepared. The handoff is not a hard cutover: it is the final step in a gradual handover that began the moment migration was initiated.
 
 ---
 
@@ -94,7 +92,7 @@ Objects exist in one of three states:
 - **Grey:** Currently within the observation radius of an active agent.
 - **Black:** High influence weight; part of the current active reality ground.
 
-Because the garbage collector's marking front travels at the same propagation velocity as mutations, it cannot be outrun by the mutation front. A flying reference cannot be collected before it is observed. The reclamation model is self-consistent with the propagation model — no special cases required.
+Because the garbage collector's marking front travels at the same propagation velocity as mutations, it cannot be outrun by the mutation front. A flying reference cannot be collected before it is observed. The reclamation model is self-consistent with the propagation model, with no special cases required.
 
 ---
 
